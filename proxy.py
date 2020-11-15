@@ -3,9 +3,7 @@ import asyncio
 
 class ProxyServer(object):
 
-
     METHODS = [b'CONNECT', b'GET', b'POST', b'DELETE', b'PUT', b'OPTIONS']
-
 
     async def parse_header(self, reader):
         data, headers = b'', {}
@@ -41,10 +39,8 @@ class ProxyServer(object):
             headers['_port'] = 80
         return data, headers
 
-
     def client_close(self, reader, writer):
         writer.close()
-
 
     async def create_connection(self, host, port):
         try:
@@ -56,8 +52,6 @@ class ProxyServer(object):
         print('success create connection ', host, port)
         return reader, writer
 
-
-
     async def transport(self, name, reader, writer):
         while True:
             data = await reader.read(1024)
@@ -66,7 +60,6 @@ class ProxyServer(object):
                 writer.close()
                 break
             writer.write(data)
-
 
     async def client_connected(self, reader, writer):
         data, headers = await self.parse_header(reader)
@@ -89,21 +82,16 @@ class ProxyServer(object):
         asyncio.get_event_loop().create_task(self.transport(headers[b'Host'] + b' request', reader, remote_writer))
         asyncio.get_event_loop().create_task(self.transport(headers[b'Host'] + b' response', remote_reader, writer))
 
-
-
-
     async def serve_forever(self, host, port):
         # asyncio.get_event_loop().create_task(self.display_info())
         server = await asyncio.start_server(self.client_connected, host, port)
         await server.serve_forever()
-
 
     async def display_info(self):
         while True:
             print('all tasks:')
             print(len(asyncio.all_tasks()))
             await asyncio.sleep(3)
-
 
     def run(self, host, port):
         asyncio.run(server.serve_forever(host, port))
